@@ -41,7 +41,7 @@
 
   /* Typography — bumped up one step across the board */
   --font-display: 'Orbitron', monospace;
-  --font-body:    'Share Tech Mono', monospace;
+  --font-body:    'Segoe Ui', Arial, 'Share Tech Mono', monospace;
   --font-sz-xs:   15px;
   --font-sz-sm:   16px;
   --font-sz-base: 18px;
