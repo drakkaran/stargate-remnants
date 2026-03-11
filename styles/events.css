@@ -1,0 +1,391 @@
+/* ═══════════════════════════════════════════════════════════════════
+   STARGATE: REMNANTS — Events & Game-Over Styles  (Phase 7)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Event overlay ────────────────────────────────────────────────── */
+
+#event-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(3px);
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+}
+
+#event-overlay.active {
+  display: flex;
+}
+
+#event-box {
+  background: var(--c-panel);
+  border: 1px solid var(--c-border-bright);
+  border-radius: var(--r-lg);
+  box-shadow: 0 0 40px rgba(200, 131, 42, 0.20), var(--shadow-panel);
+  max-width: 680px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Danger (urgent) events — red accent */
+#event-box[data-type="danger"] {
+  border-color: rgba(200, 50, 36, 0.6);
+  box-shadow: 0 0 48px rgba(200, 50, 36, 0.28), var(--shadow-panel);
+}
+#event-box[data-type="danger"] .event-header {
+  background: linear-gradient(180deg, rgba(80,16,10,0.5) 0%, var(--c-panel) 100%);
+}
+#event-box[data-type="danger"] .event-title {
+  color: #f07070;
+}
+
+/* Gate activity (non-urgent) events — amber/teal accent */
+#event-box[data-type="gate"] {
+  border-color: rgba(56, 212, 240, 0.35);
+  box-shadow: 0 0 48px rgba(56, 212, 240, 0.14), var(--shadow-panel);
+}
+#event-box[data-type="gate"] .event-header {
+  border-left: 4px solid rgba(56,212,240,0.65);
+  padding-left: calc(var(--sp-6) - 4px);
+  background: linear-gradient(180deg, rgba(10,32,52,0.6) 0%, var(--c-panel) 100%);
+}
+#event-box[data-type="gate"] .event-title {
+  color: var(--c-amber-bright);
+}
+
+/* ── Event header ─────────────────────────────────────────────────── */
+
+.event-header {
+  padding: var(--sp-5) var(--sp-6);
+  border-bottom: 1px solid var(--c-border);
+  background: linear-gradient(180deg, var(--c-panel-alt) 0%, var(--c-panel) 100%);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+
+.event-header.event-urgent {
+  border-left: 4px solid var(--c-red);
+  padding-left: calc(var(--sp-6) - 4px);
+}
+
+.event-alert-badge {
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: var(--c-red-bright);
+  background: rgba(176, 48, 32, 0.18);
+  border: 1px solid rgba(176, 48, 32, 0.50);
+  border-radius: var(--r-sm);
+  padding: 2px 8px;
+  display: inline-block;
+  margin-bottom: var(--sp-3);
+  animation: event-badge-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes event-badge-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+.event-badge-info {
+  color: var(--c-amber-bright);
+  background: rgba(56, 212, 240, 0.10);
+  border-color: rgba(56, 212, 240, 0.40);
+  animation: none;
+}
+
+.event-title {
+  font-family: var(--font-display);
+  font-size: var(--font-sz-lg);
+  color: var(--c-text-bright);
+  letter-spacing: 0.06em;
+  margin-bottom: var(--sp-3);
+  line-height: 1.3;
+}
+
+.event-description {
+  font-size: var(--font-sz-sm);
+  color: var(--c-text);
+  line-height: 1.7;
+  font-family: var(--font-body);
+}
+
+/* ── Response options ─────────────────────────────────────────────── */
+
+.event-responses {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: var(--sp-3) var(--sp-4);
+}
+
+.event-response {
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: var(--r-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: var(--sp-1) 0;
+  position: relative;
+}
+
+.event-response:hover {
+  background: rgba(200, 131, 42, 0.08);
+  border-color: var(--c-amber-dim);
+}
+
+.event-response:hover .event-response-label {
+  color: var(--c-amber-bright);
+}
+
+.event-response-locked {
+  opacity: 0.50;
+  cursor: not-allowed;
+}
+
+.event-response-locked:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+.event-response-label {
+  font-family: var(--font-display);
+  font-size: var(--font-sz-sm);
+  color: var(--c-amber);
+  letter-spacing: 0.08em;
+  transition: color var(--t-fast);
+}
+
+.event-response-desc {
+  font-size: var(--font-sz-sm);
+  color: var(--c-text-dim);
+  line-height: 1.6;
+}
+
+.event-lock {
+  color: var(--c-text-muted);
+  font-size: 14px;
+}
+
+/* Dividers between responses */
+.event-response + .event-response::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--sp-5);
+  right: var(--sp-5);
+  height: 1px;
+  background: var(--c-border);
+}
+
+/* ── Nav alert button (shown when gate event pending) ─────────────── */
+
+#event-alert-btn {
+  display: none;
+  position: fixed;
+  top: calc(var(--header-h) + var(--daybar-h) + 8px);
+  right: var(--sp-4);
+  z-index: 150;
+  background: var(--c-red);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-md);
+  padding: 6px 14px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  animation: alert-btn-pulse 1s ease-in-out infinite;
+  box-shadow: var(--glow-red);
+}
+
+#event-alert-btn.event-alert-urgent {
+  animation: alert-btn-pulse 0.6s ease-in-out infinite;
+}
+
+@keyframes alert-btn-pulse {
+  0%, 100% { transform: scale(1.00); opacity: 1; }
+  50%       { transform: scale(1.04); opacity: 0.80; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ENHANCED GAME-OVER SCREEN
+   ═══════════════════════════════════════════════════════════════════ */
+
+#game-over-screen {
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-6);
+  padding: var(--sp-8) var(--sp-4);
+  overflow-y: auto;
+  background: radial-gradient(ellipse at center, rgba(30, 20, 10, 0.95) 0%, var(--c-bg) 100%);
+}
+
+/* Win state — amber radial glow */
+#game-over-screen.win-state {
+  background: radial-gradient(ellipse at center, rgba(200, 131, 42, 0.10) 0%, var(--c-bg) 70%);
+}
+
+/* Loss state — red radial glow */
+#game-over-screen.loss-state {
+  background: radial-gradient(ellipse at center, rgba(176, 48, 32, 0.12) 0%, var(--c-bg) 70%);
+}
+
+/* ── Title ─────────────────────────────────────────────────────────── */
+
+.game-over-title-win {
+  font-family: var(--font-display);
+  font-size: var(--font-sz-3xl);
+  color: var(--c-amber-bright);
+  text-shadow: var(--glow-amber);
+  letter-spacing: 0.12em;
+  text-align: center;
+  animation: go-title-in 0.8s ease-out both;
+}
+
+.game-over-title-loss {
+  font-family: var(--font-display);
+  font-size: var(--font-sz-3xl);
+  color: var(--c-red-bright);
+  text-shadow: var(--glow-red);
+  letter-spacing: 0.12em;
+  text-align: center;
+  animation: go-title-in 0.8s ease-out both;
+}
+
+/* Backwards compat — keep old id-based rule working */
+#game-over-title {
+  font-family: var(--font-display);
+  font-size: var(--font-sz-3xl);
+  letter-spacing: 0.12em;
+  text-align: center;
+  animation: go-title-in 0.8s ease-out both;
+}
+
+@keyframes go-title-in {
+  from { opacity: 0; transform: translateY(-18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Narrative text ────────────────────────────────────────────────── */
+
+#game-over-msg {
+  font-size: var(--font-sz-base);
+  color: var(--c-text-dim);
+  max-width: 480px;
+  line-height: 1.85;
+  text-align: center;
+  animation: go-msg-in 1.1s ease-out 0.3s both;
+}
+
+#game-over-msg p {
+  margin: 0 0 var(--sp-3) 0;
+}
+
+#game-over-msg p:last-child { margin-bottom: 0; }
+
+@keyframes go-msg-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Stats grid ────────────────────────────────────────────────────── */
+
+#game-over-stats {
+  animation: go-stats-in 1.2s ease-out 0.6s both;
+  width: 100%;
+  max-width: 480px;
+}
+
+@keyframes go-stats-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.go-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2) var(--sp-4);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  padding: var(--sp-5) var(--sp-6);
+}
+
+.go-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.go-stat-label {
+  font-size: 13px;
+  color: var(--c-text-muted);
+  letter-spacing: 0.08em;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+}
+
+.go-stat-val {
+  font-size: var(--font-sz-md);
+  color: var(--c-text-bright);
+  font-family: var(--font-body);
+}
+
+.go-stat-milestone .go-stat-label {
+  color: var(--c-olive);
+}
+.go-stat-milestone .go-stat-val {
+  color: var(--c-olive-bright);
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────── */
+
+#game-over-screen .menu-btn {
+  min-width: 180px;
+  max-width: 260px;
+  animation: go-btn-in 1.4s ease-out 0.8s both;
+}
+
+@keyframes go-btn-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Stargate animation on win ─────────────────────────────────────── */
+
+.go-gate-icon {
+  font-size: 62px;
+  animation: go-gate-spin 6s linear infinite;
+  display: block;
+  text-align: center;
+  opacity: 0.7;
+}
+
+@keyframes go-gate-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.go-loss-icon {
+  font-size: 53px;
+  display: block;
+  text-align: center;
+  opacity: 0.5;
+  animation: go-loss-fade 3s ease-in-out infinite;
+}
+
+@keyframes go-loss-fade {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.65; }
+}

@@ -1,0 +1,490 @@
+/* ============================================================
+   STARGATE: REMNANTS — personnel.css
+   Personnel screen: summary bar, cards, stat pips, progress
+   bars, status badges, detail expansion, item management.
+   ============================================================ */
+
+/* ── Scene container ────────────────────────────────────────── */
+.scene-panel[data-scene="personnel"] {
+  padding: var(--sp-3);
+  gap: var(--sp-3);
+  overflow-y: auto;
+}
+
+#personnel-scene {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+/* ── Summary bar ────────────────────────────────────────────── */
+.pers-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  flex-wrap: wrap;
+}
+
+.pers-summary-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-width: 36px;
+}
+
+.pers-summary-num {
+  font-family: var(--font-display);
+  font-size: var(--font-sz-lg);
+  color: var(--c-text-bright);
+  line-height: 1;
+}
+
+.pers-summary-num.olive { color: var(--c-olive-bright); }
+.pers-summary-num.red   { color: var(--c-red-bright); }
+
+.pers-summary-label {
+  font-size: 12px;
+  color: var(--c-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pers-summary-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--c-border);
+  flex-shrink: 0;
+}
+
+.facility-missing {
+  font-size: var(--font-sz-xs);
+  color: var(--c-amber-dim);
+  border: 1px solid var(--c-amber-dim);
+  border-radius: var(--r-sm);
+  padding: 2px var(--sp-2);
+  opacity: 0.8;
+}
+
+/* ── Card list ──────────────────────────────────────────────── */
+.pers-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+/* ── Personnel card ─────────────────────────────────────────── */
+.pers-card {
+  background: var(--c-panel);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+
+.pers-card:hover {
+  border-color: var(--c-border-bright);
+}
+
+.pers-card.pers-expanded {
+  border-color: var(--c-amber-dim);
+  box-shadow: 0 0 12px rgba(14,165,200,0.12);
+}
+
+.pers-card.pers-dead {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+  border-color: var(--c-border);
+}
+
+/* ── Card header ────────────────────────────────────────────── */
+.pers-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  cursor: pointer;
+  user-select: none;
+}
+
+.pers-card-header:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+.pers-archetype-glyph {
+  font-size: 25px;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+.pers-card-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.pers-name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.pers-name {
+  font-family: var(--font-display);
+  font-size: var(--font-sz-sm);
+  color: var(--c-text-bright);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.pers-archetype-label {
+  font-size: var(--font-sz-xs);
+  margin-top: 2px;
+}
+
+/* ── Status badges ──────────────────────────────────────────── */
+.pers-badge {
+  font-size: 12px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-display);
+  flex-shrink: 0;
+}
+
+.badge-dead     { background: rgba(176,48,32,0.25); color: var(--c-red-bright);    border: 1px solid var(--c-red); }
+.badge-offworld { background: rgba(42,108,108,0.25); color: var(--c-teal-bright);  border: 1px solid var(--c-teal); }
+.badge-healing  { background: rgba(26,111,168,0.20);  color: var(--c-olive-bright); border: 1px solid var(--c-olive); }
+.badge-training { background: rgba(14,165,200,0.15); color: var(--c-amber-bright); border: 1px solid var(--c-amber-dim); }
+
+/* ── Health bar (right column in header) ────────────────────── */
+.pers-health-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.pers-hp-bar {
+  width: 72px;
+  height: 5px;
+  background: var(--c-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.pers-hp-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width var(--t-slow);
+}
+
+.health-good { background: linear-gradient(90deg, var(--c-olive-dim), var(--c-olive-bright)); }
+.health-warn { background: linear-gradient(90deg, var(--c-amber-dim), var(--c-amber)); }
+.health-crit { background: linear-gradient(90deg, var(--c-red), var(--c-red-bright)); animation: hp-crit-pulse 1.5s ease-in-out infinite; }
+
+@keyframes hp-crit-pulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+.pers-hp-text {
+  font-family: var(--font-display);
+  font-size: var(--font-sz-xs);
+}
+
+.pers-hp-text.health-good { color: var(--c-olive-bright); }
+.pers-hp-text.health-warn { color: var(--c-amber-bright); }
+.pers-hp-text.health-crit { color: var(--c-red-bright); }
+
+.pers-expand-arrow {
+  color: var(--c-text-muted);
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-left: var(--sp-1);
+}
+
+/* ── Stat row (always visible below header) ─────────────────── */
+.pers-stat-row {
+  display: flex;
+  padding: var(--sp-2) var(--sp-3);
+  gap: var(--sp-1);
+  border-top: 1px solid var(--c-border);
+  background: var(--c-surface);
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.pers-stat-row::-webkit-scrollbar { display: none; }
+
+.pers-stat-col {
+  flex: 1;
+  min-width: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: help;
+}
+
+.stat-glyph {
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* ── Pip bar ────────────────────────────────────────────────── */
+.stat-pips {
+  display: flex;
+  gap: 1px;
+  flex-wrap: nowrap;
+}
+
+.pip {
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  flex-shrink: 0;
+  transition: background var(--t-fast);
+}
+
+.pip-filled { background: var(--c-olive-bright); }
+.pip-bonus  { background: var(--c-amber);        }
+.pip-empty  { background: var(--c-border);       }
+
+.stat-val {
+  font-family: var(--font-display);
+  font-size: var(--font-sz-xs);
+  color: var(--c-text-bright);
+  line-height: 1;
+}
+
+.stat-bonus {
+  color: var(--c-amber-bright);
+  font-size: 12px;
+  margin-left: 1px;
+}
+
+/* ── Progress bars (training / healing) ─────────────────────── */
+.pers-progress-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border-top: 1px solid var(--c-border);
+  font-size: var(--font-sz-xs);
+}
+
+.pers-prog-bar-wrap {
+  flex: 1;
+  height: 4px;
+  background: var(--c-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.pers-prog-bar {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--c-amber-dim), var(--c-amber-bright));
+  transition: width var(--t-slow);
+}
+
+.pers-prog-bar.heal-bar {
+  background: linear-gradient(90deg, var(--c-olive-dim), var(--c-olive-bright));
+}
+
+/* ── Item strip ─────────────────────────────────────────────── */
+.pers-item-strip {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border-top: 1px solid var(--c-border);
+  font-size: var(--font-sz-xs);
+  background: rgba(14,165,200,0.04);
+}
+
+.item-glyph { font-size: 15px; }
+
+.item-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-bonus {
+  color: var(--c-amber-bright);
+  background: rgba(14,165,200,0.12);
+  border: 1px solid var(--c-amber-dim);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* ── Expanded detail panel ──────────────────────────────────── */
+.pers-detail-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border-top: 1px solid var(--c-amber-dim);
+  background: var(--c-panel-alt);
+}
+
+.pers-detail-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.pers-detail-label {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--c-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border-bottom: 1px solid var(--c-border);
+  padding-bottom: 3px;
+  margin-bottom: var(--sp-1);
+}
+
+/* ── Training buttons ───────────────────────────────────────── */
+.pers-train-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.pers-action-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-2);
+  font-size: var(--font-sz-xs);
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+}
+
+.btn-active-train {
+  border-color: var(--c-amber);
+  color: var(--c-amber-bright);
+  background: rgba(14,165,200,0.08);
+}
+
+.btn-healing {
+  border-color: var(--c-olive);
+  color: var(--c-olive-bright);
+  background: rgba(26,111,168,0.08);
+}
+
+.stat-badge {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--c-text-muted);
+  margin-left: auto;
+}
+
+.training-spinner {
+  color: var(--c-amber-bright);
+  display: inline-block;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Stat breakdown ─────────────────────────────────────────── */
+.pers-stat-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pers-stat-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-sz-xs);
+  color: var(--c-text);
+}
+
+/* ── Item management ────────────────────────────────────────── */
+.pers-item-select {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.item-slot-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.equipped-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: var(--font-sz-xs);
+  padding: var(--sp-1) var(--sp-2);
+  background: rgba(14,165,200,0.08);
+  border: 1px solid var(--c-amber-dim);
+  border-radius: var(--r-sm);
+}
+
+.item-select-dropdown {
+  width: 100%;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+  color: var(--c-text);
+  font-family: var(--font-body);
+  font-size: var(--font-sz-xs);
+  padding: var(--sp-1) var(--sp-2);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.item-select-dropdown:hover {
+  border-color: var(--c-olive);
+}
+
+.item-select-dropdown option {
+  background: var(--c-panel);
+  color: var(--c-text);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .pers-detail-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .pers-name {
+    max-width: 150px;
+  }
+
+  .pers-hp-bar {
+    width: 52px;
+  }
+
+  .pip {
+    width: 4px;
+    height: 4px;
+  }
+}

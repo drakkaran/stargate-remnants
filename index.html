@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0f0c">
+  <title>Stargate: Remnants</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/ui.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/personnel.css">
+  <link rel="stylesheet" href="styles/gate.css">
+  <link rel="stylesheet" href="styles/decoding.css">
+  <link rel="stylesheet" href="styles/research.css">
+  <link rel="stylesheet" href="styles/events.css">
+  <link rel="stylesheet" href="styles/intro.css">
+</head>
+<body>
+
+<canvas id="star-bg" aria-hidden="true"></canvas>
+
+<div id="app">
+
+  <!-- ══════════════════════════════════════════════
+       MAIN MENU SCREEN
+  ══════════════════════════════════════════════ -->
+  <div id="main-menu" class="screen active">
+    <div class="menu-container">
+
+      <!-- Logo -->
+      <div class="menu-logo">
+        <div class="menu-logo-ring"></div>
+        <div class="menu-title">Stargate</div>
+        <div class="menu-subtitle">Remnants</div>
+      </div>
+
+      <!-- Difficulty -->
+      <div style="width:100%">
+        <div class="igm-section-title" style="margin-bottom:8px">Difficulty</div>
+        <div class="difficulty-selector">
+          <button class="diff-btn" data-diff="easy"   onclick="selectDifficulty('easy')">Easy</button>
+          <button class="diff-btn selected" data-diff="normal" onclick="selectDifficulty('normal')">Normal</button>
+          <button class="diff-btn" data-diff="hard"   onclick="selectDifficulty('hard')">Hard</button>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="menu-buttons">
+        <button class="menu-btn menu-btn-primary" id="btn-new-game"    onclick="startNewGame()">▶ New Game</button>
+        <button class="menu-btn" id="btn-resume"  onclick="resumeGame()">↩ Resume</button>
+        <button class="menu-btn" id="btn-load"    onclick="openLoadScreen()">📂 Load Game</button>
+        <button class="menu-btn" id="btn-options" onclick="openOptionsScreen()">⚙ Options</button>
+        <button class="menu-btn" id="btn-help"    onclick="openHelpScreen()">? Help</button>
+      </div>
+
+      <!-- Sound toggle -->
+      <div class="sound-toggle-row">
+        <span class="sound-toggle-label">🔊 Sound</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="sound-toggle" onchange="toggleSound(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <!-- Footer: dev mode + version -->
+      <div class="menu-footer">
+        <button class="dev-toggle-btn" id="dev-toggle-btn" onclick="toggleDevMode()">Dev Mode</button>
+        <span class="menu-ver" id="menu-version"></span>
+      </div>
+
+    </div>
+  </div><!-- /#main-menu -->
+
+
+  <!-- ══════════════════════════════════════════════
+       LOAD GAME SCREEN (modal-style overlay)
+  ══════════════════════════════════════════════ -->
+  <div id="load-screen" class="screen">
+    <div class="menu-container">
+      <div class="menu-title" style="font-size:var(--font-sz-xl)">Load Game</div>
+
+      <div style="display:flex;flex-direction:column;gap:var(--sp-3);width:100%">
+        <!-- Slot 1 -->
+        <div class="slot-item">
+          <div class="slot-meta" id="menu-slot-1">Slot 1 — Empty</div>
+          <div class="slot-actions">
+            <button class="btn btn-olive" onclick="Save.loadFromSlot(1)">Load</button>
+            <button class="btn btn-red"   onclick="confirmDeleteSlot(1)">Delete</button>
+          </div>
+        </div>
+        <!-- Slot 2 -->
+        <div class="slot-item">
+          <div class="slot-meta" id="menu-slot-2">Slot 2 — Empty</div>
+          <div class="slot-actions">
+            <button class="btn btn-olive" onclick="Save.loadFromSlot(2)">Load</button>
+            <button class="btn btn-red"   onclick="confirmDeleteSlot(2)">Delete</button>
+          </div>
+        </div>
+        <!-- Slot 3 -->
+        <div class="slot-item">
+          <div class="slot-meta" id="menu-slot-3">Slot 3 — Empty</div>
+          <div class="slot-actions">
+            <button class="btn btn-olive" onclick="Save.loadFromSlot(3)">Load</button>
+            <button class="btn btn-red"   onclick="confirmDeleteSlot(3)">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="menu-btn" onclick="UI.showScreen('main-menu')">← Back</button>
+    </div>
+  </div><!-- /#load-screen -->
+
+
+  <!-- ══════════════════════════════════════════════
+       OPTIONS SCREEN
+  ══════════════════════════════════════════════ -->
+  <div id="options-screen" class="screen">
+    <div class="options-container">
+      <div class="options-title">Options</div>
+
+      <div class="options-row">
+        <span class="options-row-label">🔊 Sound Effects</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="opt-sound" onchange="toggleSound(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="options-row">
+        <span class="options-row-label">🛠 Developer Mode</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="opt-dev" onchange="toggleDevModeOpt(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="options-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <span class="options-row-label">Difficulty</span>
+        <div class="difficulty-selector" style="width:100%">
+          <button class="diff-btn" data-diff="easy"   onclick="selectDifficulty('easy')">Easy</button>
+          <button class="diff-btn selected" data-diff="normal" onclick="selectDifficulty('normal')">Normal</button>
+          <button class="diff-btn" data-diff="hard"   onclick="selectDifficulty('hard')">Hard</button>
+        </div>
+      </div>
+
+      <button class="menu-btn" onclick="UI.showScreen('main-menu')">← Back</button>
+    </div>
+  </div><!-- /#options-screen -->
+
+
+  <!-- ══════════════════════════════════════════════
+       HELP SCREEN
+  ══════════════════════════════════════════════ -->
+  <div id="help-screen" class="screen">
+    <div class="help-section">
+      <h2>Stargate: Remnants — Help</h2>
+
+      <h3>Objective</h3>
+      <p>Your base woke from cryo-sleep to find Earth's gate address won't lock. Rebuild, research, and explore other worlds to discover what happened — and find a way to Pegasus.</p>
+
+      <h3>Resources</h3>
+      <p>Naquadah, Food, Power, and Data are your primary resources. Manage them carefully. Personnel consume 1 Food per day; each installed room consumes 1 Power per day.</p>
+
+      <h3>Base Building</h3>
+      <p>Build rooms to expand capabilities. Gate Room and Control Room are active by default. Construction takes a few in-game hours and consumes resources.</p>
+
+      <h3>Personnel</h3>
+      <p>Each team member has Combat, Diplomacy, Science, and Survival stats. Send teams off-world on missions. Match personnel to mission types for better success chances.</p>
+
+      <h3>Gate Travel</h3>
+      <p>Dial known gate addresses to visit other worlds. Decode new addresses by solving riddles, gathering intelligence, or using Ancient Database technology.</p>
+
+      <h3>Research</h3>
+      <p>Build a Research Lab to access the tech tree. Research unlocks new buildings, upgrades, and defences. Some rare technologies are only found off-world.</p>
+
+      <h3>Time</h3>
+      <p>Each game hour is 5 real-world seconds. The day/night bar at the top tracks the current time. Events and consumption happen each tick.</p>
+
+      <button class="menu-btn" onclick="UI.showScreen('main-menu')" style="margin-top:var(--sp-5)">← Back</button>
+    </div>
+  </div><!-- /#help-screen -->
+
+
+  <!-- ══════════════════════════════════════════════
+       GAME SCREEN
+  ══════════════════════════════════════════════ -->
+  <div id="game" class="screen">
+
+    <!-- Header -->
+    <header id="app-header">
+      <div id="game-title">Stargate <span>Remnants</span></div>
+      <div class="header-controls">
+        <button class="btn-icon" onclick="UI.openMenu()" title="Menu">☰</button>
+      </div>
+    </header>
+
+    <!-- Day/Night cycle bar -->
+    <div id="day-night-bar">
+      <div id="day-night-glow"></div>
+      <!-- Phase transition ticks: dawn 4h, day 7h, dusk 18h, night 21h -->
+      <span class="dnb-tick" style="left:16.67%" data-label="Dawn"></span>
+      <span class="dnb-tick" style="left:29.17%" data-label="Day"></span>
+      <span class="dnb-tick" style="left:75%"    data-label="Dusk"></span>
+      <span class="dnb-tick" style="left:87.5%"  data-label="Night"></span>
+      <div id="time-label">Day 1 · 06:00 · Day</div>
+    </div>
+
+    <!-- Resource strip -->
+    <div id="resource-bar">
+      <!-- Primary resources (always visible) -->
+      <div class="res-item">
+        <span class="res-label"><span class="res-icon">⚡</span><span class="res-name"> Power</span></span>
+        <span class="res-value" id="res-power">0</span>
+        <span class="res-label res-power-rate" style="font-size:10px">(<span id="power-gen-rate" class="power-net positive">+1/d</span>)</span>
+      </div>
+      <div class="res-divider"></div>
+      <div class="res-item">
+        <span class="res-label"><span class="res-icon">🍖</span><span class="res-name"> Food</span></span>
+        <span class="res-value" id="res-food">0</span>
+      </div>
+      <div class="res-divider"></div>
+      <div class="res-item">
+        <span class="res-label"><span class="res-icon">◈</span><span class="res-name"> Naquadah</span></span>
+        <span class="res-value" id="res-naquadah">0</span>
+      </div>
+      <div class="res-divider"></div>
+      <div class="res-item">
+        <span class="res-label"><span class="res-icon">💾</span><span class="res-name"> Data</span></span>
+        <span class="res-value" id="res-data">0</span>
+      </div>
+      <div class="res-divider"></div>
+      <!-- Secondary (always shown in bar; per GDD) -->
+      <div class="res-item">
+        <span class="res-label"><span class="res-icon">🏺</span><span class="res-name"> Artifacts</span></span>
+        <span class="res-value" id="res-artifacts">0</span>
+      </div>
+      <div class="res-divider"></div>
+      <div class="res-item">
+        <span class="res-label"><span class="res-icon">⚗</span><span class="res-name"> Alloys</span></span>
+        <span class="res-value" id="res-alloys">0</span>
+      </div>
+      <button class="res-toggle-btn" id="res-toggle-btn"
+              onclick="UI.toggleResDrawer()" title="Show all resources">▼</button>
+    </div>
+
+    <!-- Resource inventory drawer (collapsed by default) -->
+    <div id="res-drawer">
+      <div id="inventory-panel"></div>
+    </div>
+
+    <!-- Navigation tabs -->
+    <nav id="main-nav">
+      <button class="nav-btn active" data-scene="home"      onclick="UI.navigateTo('home')"><span class="nav-icon">⌂</span><span class="nav-label">Base</span></button>
+      <button class="nav-btn"        data-scene="personnel" onclick="UI.navigateTo('personnel')"><span class="nav-icon">👥</span><span class="nav-label">Personnel</span></button>
+      <button class="nav-btn"        data-scene="gate"      onclick="UI.navigateTo('gate')"><span class="nav-icon">◎</span><span class="nav-label">Gate</span></button>
+      <button class="nav-btn"        data-scene="research"  onclick="UI.navigateTo('research')"><span class="nav-icon">🔬</span><span class="nav-label">Research</span></button>
+      <button class="nav-btn"        data-scene="crafting"  onclick="UI.navigateTo('crafting')"><span class="nav-icon">⚙</span><span class="nav-label">Workshop</span></button>
+    </nav>
+
+    <!-- Scene panels -->
+    <div id="content-area">
+
+      <!-- BASE SCENE -->
+      <div class="scene-panel active" data-scene="home">
+
+        <!-- Base schematic diagram -->
+        <div class="panel">
+          <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
+            Base Schematic
+            <button class="btn btn-olive" style="padding:4px 12px;font-size:11px"
+                    onclick="openBuildModal()">+ Build Room</button>
+          </div>
+          <div id="base-diagram"></div>
+        </div>
+
+        <!-- Power breakdown -->
+        <div id="power-summary"></div>
+
+        <!-- Control log -->
+        <div class="panel" style="flex:1;min-height:420px;overflow:hidden;display:flex;flex-direction:column">
+          <div class="panel-title">Control Room Log</div>
+          <div id="control-log" style="flex:1;overflow-y:auto"></div>
+        </div>
+
+        <!-- Build modal (bottom sheet) -->
+        <div id="build-modal">
+          <div class="build-modal-inner">
+            <div class="build-modal-header">
+              <span class="build-modal-title">Construct Room</span>
+              <button class="btn-icon" onclick="Base.closeBuildModal()" style="font-size:13px">✕</button>
+            </div>
+            <div id="build-menu-panel"></div>
+          </div>
+        </div>
+
+        <!-- Room detail panel (slide up) -->
+        <div id="room-detail-panel"></div>
+
+      </div>
+
+      <!-- PERSONNEL SCENE -->
+      <div class="scene-panel" data-scene="personnel">
+        <div id="personnel-scene"></div>
+        <div id="armoury-scene"></div>
+      </div>
+
+      <!-- GATE SCENE -->
+      <div class="scene-panel" data-scene="gate">
+        <div id="gate-scene"></div>
+      </div>
+
+      <!-- Decoding UI is embedded in the Gate screen -->
+      <div id="decoding-scene" style="display:none"></div>
+
+      <!-- RESEARCH SCENE -->
+      <div class="scene-panel" data-scene="research">
+        <div id="research-scene"></div>
+      </div>
+
+      <!-- CRAFTING SCENE -->
+      <div class="scene-panel" data-scene="crafting">
+        <div id="crafting-scene"></div>
+      </div>
+
+
+    </div><!-- /#content-area -->
+
+    <!-- Footer -->
+    <footer id="app-footer">
+      <span id="footer-status" class="dim">Systems nominal</span>
+      <span id="footer-version"></span>
+    </footer>
+
+    <!-- In-game menu backdrop -->
+    <div id="menu-backdrop" onclick="UI.closeMenu()"></div>
+
+    <!-- In-game menu slide-over -->
+    <aside id="in-game-menu">
+      <div class="igm-title">
+        Menu
+        <button class="btn-icon" onclick="UI.closeMenu()" style="font-size:14px">✕</button>
+      </div>
+
+      <!-- Sound toggle -->
+      <div class="sound-toggle-row">
+        <span class="sound-toggle-label">🔊 Sound</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="igm-sound-toggle" onchange="toggleSound(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <!-- Music volume -->
+      <div class="igm-vol-row">
+        <div class="igm-vol-header">
+          <span class="sound-toggle-label">🎵 Music</span>
+          <span id="igm-music-vol-label" class="igm-vol-label">60%</span>
+        </div>
+        <input type="range" id="igm-music-vol" min="0" max="100" value="60" step="1"
+               class="igm-vol-slider"
+               oninput="Audio.setMusicVolume(this.value/100);
+                        document.getElementById('igm-music-vol-label').textContent=this.value+'%'">
+      </div>
+
+      <!-- Save slots -->
+      <div class="igm-section-title">Save Game</div>
+      <div style="display:flex;flex-direction:column;gap:var(--sp-2)">
+        <div class="slot-item"><div class="slot-meta" id="igm-slot-1">Slot 1</div>
+          <div class="slot-actions">
+            <button class="btn btn-amber" onclick="Save.saveToSlot(1);UI.closeMenu()">Save</button>
+            <button class="btn btn-olive" onclick="Save.loadFromSlot(1);UI.closeMenu()">Load</button>
+            <button class="btn btn-red"   onclick="confirmDeleteSlot(1)">Del</button>
+          </div>
+        </div>
+        <div class="slot-item"><div class="slot-meta" id="igm-slot-2">Slot 2</div>
+          <div class="slot-actions">
+            <button class="btn btn-amber" onclick="Save.saveToSlot(2);UI.closeMenu()">Save</button>
+            <button class="btn btn-olive" onclick="Save.loadFromSlot(2);UI.closeMenu()">Load</button>
+            <button class="btn btn-red"   onclick="confirmDeleteSlot(2)">Del</button>
+          </div>
+        </div>
+        <div class="slot-item"><div class="slot-meta" id="igm-slot-3">Slot 3</div>
+          <div class="slot-actions">
+            <button class="btn btn-amber" onclick="Save.saveToSlot(3);UI.closeMenu()">Save</button>
+            <button class="btn btn-olive" onclick="Save.loadFromSlot(3);UI.closeMenu()">Load</button>
+            <button class="btn btn-red"   onclick="confirmDeleteSlot(3)">Del</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:1"></div>
+
+      <!-- Main menu / quit -->
+      <button class="menu-btn" onclick="quitToMenu()">⏏ Main Menu</button>
+
+    </aside><!-- /#in-game-menu -->
+
+    <!-- Dev badge -->
+    <div id="dev-badge">DEV</div>
+
+    <!-- Notification toast -->
+    <div id="notification" class="notification"></div>
+
+  </div><!-- /#game -->
+
+
+  <!-- ══════════════════════════════════════════════
+       GAME OVER SCREEN
+  ══════════════════════════════════════════════ -->
+  <div id="game-over-screen" class="screen">
+    <div id="game-over-icon"></div>
+    <div id="game-over-title">Mission Complete</div>
+    <div id="game-over-msg"></div>
+    <div id="game-over-stats"></div>
+    <div style="display:flex;gap:var(--sp-4);flex-wrap:wrap;justify-content:center">
+      <button class="menu-btn menu-btn-primary" onclick="quitToMenu()" style="max-width:260px">Return to Menu</button>
+      <button class="menu-btn" onclick="startNewGame()" style="max-width:220px">New Game</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       INBOUND GATE EVENT OVERLAY  (Phase 7)
+  ══════════════════════════════════════════════ -->
+  <div id="event-overlay">
+    <div id="event-box"></div>
+  </div>
+
+  <!-- Alert button shown in header when event is pending -->
+  <button id="event-alert-btn" onclick="Events._reopenOverlay && Events._reopenOverlay()">
+    ⚠ GATE ALERT
+  </button>
+
+  <!-- ══════════════════════════════════════════════
+       INTRO SCREEN  (Phase 8) — built dynamically by intro.js
+  ══════════════════════════════════════════════ -->
+  <div id="intro-screen" class="intro-hidden"></div>
+
+  <!-- ══════════════════════════════════════════════
+       TUTORIAL HELP BUTTON  (Phase 8)
+  ══════════════════════════════════════════════ -->
+  <button id="tut-help-btn" title="Tutorial" onclick="Tutorial.replay()" style="display:none">?</button>
+
+  <!-- ══════════════════════════════════════════════
+       BASE NAME MODAL
+  ══════════════════════════════════════════════ -->
+  <div id="name-modal" class="name-modal-backdrop">
+    <div class="name-modal-box">
+      <div class="name-modal-title">Name Your World</div>
+      <div class="name-modal-sub dim">Choose a designation for your base. This will identify your save.</div>
+      <div class="name-modal-input-row">
+        <input id="base-name-input" class="name-modal-input" type="text" maxlength="40"
+               placeholder="Proxima Station"
+               onkeydown="if(event.key==='Enter') confirmNewGame()">
+        <button class="btn btn-ghost name-modal-reroll" onclick="rerollBaseName()" title="Random name">⟳</button>
+      </div>
+      <div class="name-modal-actions">
+        <button class="btn btn-ghost" onclick="document.getElementById('name-modal').classList.remove('open')">Cancel</button>
+        <button class="btn btn-amber" onclick="confirmNewGame()">▶ Begin Mission</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /#app -->
+
+<!-- ══════════════════════════════════════════════
+     WORMHOLE TRANSIT OVERLAY — full-screen travel animation
+══════════════════════════════════════════════ -->
+<div id="wormhole-transit" aria-hidden="true">
+  <canvas id="wt-canvas"></canvas>
+  <div id="wt-label">TRANSIT IN PROGRESS</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     Scripts — load order matters
+══════════════════════════════════════════════ -->
+<script src="js/config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/symbols.js"></script>
+<script src="js/names.js"></script>
+<script src="js/planets.js"></script>
+<script src="js/research.js"></script>
+<script src="js/items.js"></script>
+<script src="js/events.js"></script>
+<script src="js/resources.js"></script>
+<script src="js/base.js"></script>
+<script src="js/personnel.js"></script>
+<script src="js/missions.js"></script>
+<script src="js/wormhole.js"></script>
+<script src="js/gate.js"></script>
+<script src="js/decoding.js"></script>
+<script src="js/crafting.js"></script>
+<script src="js/combat.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/intro.js"></script>
+<script src="js/tutorial.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/save.js"></script>
+
+<script>
+/* ── Bootstrap & Global Handlers ────────────────────────────── */
+
+let _selectedDifficulty = 'normal';
+let _soundEnabled = false;
+let _devMode = CONFIG.DEV_MODE_DEFAULT;
+
+function selectDifficulty(diff) {
+  _selectedDifficulty = diff;
+  // Update all diff buttons on page
+  document.querySelectorAll('.diff-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.diff === diff);
+  });
+}
+
+function toggleSound(enabled) {
+  _soundEnabled = enabled;
+  // Delegate to Audio module
+  Audio.setEnabled(enabled);
+  // Sync all legacy sound toggles
+  document.querySelectorAll('#sound-toggle, #igm-sound-toggle, #opt-sound').forEach(el => {
+    el.checked = enabled;
+  });
+  if (State.isReady()) State.write('ui.soundEnabled', enabled);
+}
+
+function toggleDevMode() {
+  _devMode = !_devMode;
+  const btn = document.getElementById('dev-toggle-btn');
+  if (btn) btn.classList.toggle('active', _devMode);
+  if (State.isReady()) {
+    State.write('ui.devMode', _devMode);
+    document.body.classList.toggle('dev-mode', _devMode);
+    document.getElementById('dev-badge').style.display = _devMode ? 'flex' : 'none';
+  }
+}
+
+function toggleDevModeOpt(on) {
+  _devMode = on;
+  document.body.classList.toggle('dev-mode', on);
+  if (State.isReady()) State.write('ui.devMode', on);
+}
+
+function startNewGame() {
+  // Show name-picker modal with a fresh random name
+  const input = document.getElementById('base-name-input');
+  if (input) input.value = Names.generateBaseName();
+  document.getElementById('name-modal')?.classList.add('open');
+}
+
+function rerollBaseName() {
+  const input = document.getElementById('base-name-input');
+  if (input) input.value = Names.generateBaseName();
+}
+
+function confirmNewGame() {
+  const raw  = document.getElementById('base-name-input')?.value?.trim();
+  const name = raw || Names.generateBaseName();
+  document.getElementById('name-modal')?.classList.remove('open');
+
+  Engine.newGame(_selectedDifficulty, name);
+  if (State.isReady()) State.write('ui.soundEnabled', _soundEnabled);
+  if (State.isReady()) State.write('ui.devMode', _devMode);
+  document.body.classList.toggle('dev-mode', _devMode);
+}
+
+function resumeGame() {
+  // Try autosave first, then most recent slot
+  if (Save.loadAutosave()) {
+    UI.showScreen('game');
+    const tutBtn = document.getElementById('tut-help-btn');
+    if (tutBtn) tutBtn.style.display = 'flex';
+    if (typeof Audio !== 'undefined' && Audio.isEnabled()) setTimeout(() => Audio.startMusic(), 400);
+    return;
+  }
+  const metas = Save.getSlotMeta();
+  const latest = metas.reduce((best, meta, i) => {
+    if (!meta) return best;
+    if (!best || meta.savedAt > best.savedAt) return { ...meta, slot: i + 1 };
+    return best;
+  }, null);
+  if (latest) {
+    Save.loadFromSlot(latest.slot);
+    UI.showScreen('game');
+    const tutBtn = document.getElementById('tut-help-btn');
+    if (tutBtn) tutBtn.style.display = 'flex';
+    if (typeof Audio !== 'undefined' && Audio.isEnabled()) setTimeout(() => Audio.startMusic(), 400);
+  } else {
+    UI.showNotification('No saved games found.', 'warn');
+  }
+}
+
+function openLoadScreen() {
+  _refreshAllSlotMeta();
+  UI.showScreen('load-screen');
+}
+
+function openOptionsScreen() {
+  document.getElementById('opt-sound').checked = _soundEnabled;
+  document.getElementById('opt-dev').checked = _devMode;
+  UI.showScreen('options-screen');
+}
+
+function openHelpScreen() {
+  UI.showScreen('help-screen');
+}
+
+function quitToMenu() {
+  Engine.stop();
+  UI.closeMenu();
+  // Phase 8: stop music on quit
+  if (typeof Audio !== 'undefined') Audio.stopMusic();
+  const tutBtn = document.getElementById('tut-help-btn');
+  if (tutBtn) tutBtn.style.display = 'none';
+  // Refresh resume button
+  document.getElementById('btn-resume').disabled = !Save.hasSaveData();
+  UI.showScreen('main-menu');
+}
+
+function confirmDeleteSlot(slot) {
+  if (confirm(`Delete save in Slot ${slot}?`)) {
+    Save.deleteSlot(slot);
+    _refreshAllSlotMeta();
+  }
+}
+
+function togglePause() {
+  const paused = Engine.togglePause();
+  const btn = document.getElementById('pause-btn');
+  if (btn) btn.textContent = paused ? '▶' : '⏸';
+  UI.showNotification(paused ? 'Paused' : 'Resumed', 'info');
+}
+
+function _refreshAllSlotMeta() {
+  const metas = Save.getSlotMeta();
+  [1,2,3].forEach(i => {
+    const meta = metas[i-1];
+    const fmt = meta
+      ? `<b>${meta.baseName ?? `Slot ${i}`}</b> &nbsp;·&nbsp; Day ${meta.day} &nbsp;·&nbsp; ${meta.difficulty} &nbsp;·&nbsp; ${new Date(meta.savedAt).toLocaleDateString()}`
+      : `<b>Slot ${i}</b> — Empty`;
+    const el1 = document.getElementById(`menu-slot-${i}`);
+    const el2 = document.getElementById(`igm-slot-${i}`);
+    if (el1) el1.innerHTML = fmt;
+    if (el2) el2.innerHTML = fmt;
+  });
+}
+
+function openBuildModal() {
+  if (!State.isReady()) return;
+  const s = State.get();
+  Base.renderBuildMenuFull(s);
+  document.getElementById('build-modal')?.classList.add('open');
+}
+
+/* ── Init ────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  // Set version in all version elements
+  document.querySelectorAll('#menu-version, #footer-version').forEach(el => {
+    el.textContent = `v${CONFIG.VERSION}`;
+  });
+
+  // Init day/night bar in idle state
+  UI.updateDayNightBar(6);
+
+  // Show resume if save data exists
+  document.getElementById('btn-resume').disabled = !Save.hasSaveData();
+
+  // Init audio (loads prefs, syncs UI)
+  Audio.init();
+
+  // Sync sound toggle state from Audio prefs
+  const audioEnabled = Audio.isEnabled();
+  _soundEnabled = audioEnabled;
+  document.querySelectorAll('#sound-toggle, #igm-sound-toggle, #opt-sound').forEach(el => {
+    el.checked = audioEnabled;
+  });
+});
+</script>
+
+
+<script>
+/* ── Star Field Background ───────────────────────────────────── */
+(function () {
+  const canvas = document.getElementById('star-bg');
+  const ctx = canvas.getContext('2d');
+
+  const STAR_COUNT = 280;
+  const stars = [];
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function initStars() {
+    stars.length = 0;
+    for (let i = 0; i < STAR_COUNT; i++) {
+      stars.push({
+        x:       Math.random() * canvas.width,
+        y:       Math.random() * canvas.height,
+        r:       Math.random() * 1.4 + 0.3,          // radius 0.3–1.7 px
+        base:    Math.random() * 0.6 + 0.2,          // base opacity 0.2–0.8
+        phase:   Math.random() * Math.PI * 2,        // twinkle phase offset
+        speed:   Math.random() * 0.6 + 0.2,          // twinkle speed
+      });
+    }
+  }
+
+  function draw(ts) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Deep space gradient fill
+    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    grad.addColorStop(0,   '#03070f');
+    grad.addColorStop(0.5, '#060b14');
+    grad.addColorStop(1,   '#040912');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const t = ts * 0.001;
+    for (const s of stars) {
+      const alpha = s.base + Math.sin(t * s.speed + s.phase) * 0.25;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(180,220,255,${Math.max(0, Math.min(1, alpha))})`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => { resize(); initStars(); });
+  resize();
+  initStars();
+  requestAnimationFrame(draw);
+})();
+</script>
+
+</body>
+</html>
